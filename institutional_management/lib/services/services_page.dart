@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'appointment_page.dart'; // Import the appointment page
+import 'accommodations_page.dart'; // Import the accommodations page
+import 'hall_booking.dart'; // Import the hall booking page
+import 'payments.dart'; // Import the payments page
+import 'ticket_booking.dart'; // Import the ticket booking page
+import 'canteen_page.dart'; // Import the canteen page
+import 'transportation.dart'; // Import the transportation page
 
 class ServicesPage extends StatelessWidget {
   // List of services
@@ -51,7 +58,46 @@ class ServicesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Services'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Services',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    blurRadius: 4.0,
+                    color: Colors.black.withOpacity(0.3),
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'Explore all available services',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue.shade800,
+                Colors.purple.shade600,
+              ],
+            ),
+          ),
+        ),
+        elevation: 0, // Remove app bar shadow
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -140,12 +186,56 @@ class ServicesPage extends StatelessWidget {
 
   // Navigate to the respective service page
   void _navigateToService(BuildContext context, String serviceTitle) {
-    // Add navigation logic for each service
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Navigating to $serviceTitle'),
-        duration: Duration(seconds: 1),
-      ),
-    );
+    switch (serviceTitle) {
+      case 'Appointment':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AppointmentPage()),
+        );
+        break;
+      case 'Accommodations':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AccommodationsPage()),
+        );
+        break;
+      case 'Hall Booking':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HallBookingPage()),
+        );
+        break;
+      case 'Payments':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PaymentsPage()),
+        );
+        break;
+      case 'Ticket Booking':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TicketBookingPage()),
+        );
+        break;
+      case 'Canteen Food':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CanteenPage()),
+        );
+        break;
+      case 'Transportation':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TransportationPage()),
+        );
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Service not implemented yet.'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+    }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart'; // Import the profile page
 import 'news_detail_page.dart'; // Import the news detail page
-import 'services_page.dart';
+import 'services/services_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
