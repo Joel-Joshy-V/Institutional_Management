@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         return SizedBox(
-          height: 200,
+          height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: liveEvents.length,
@@ -195,7 +195,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         return SizedBox(
-          height: 200,
+          height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: upcomingEvents.length,
