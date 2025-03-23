@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import '../services/canteen/canteen_page.dart';
+import '../services/accommodation/accommodation_page.dart';
+import '../services/transportation.dart';
+import '../services/hall_booking.dart';
+import '../services/appointment_page.dart';
+import '../services/ticket_booking.dart';
+import '../services/payments.dart';
 
 class Service {
   final String name;
@@ -20,43 +27,43 @@ class ServicesPage extends StatelessWidget {
       name: 'Canteen',
       description: 'Order food and beverages from the institutional canteen',
       icon: Icons.restaurant,
-      page: _getPageByName('CanteenPage'),
+      page: CanteenPage(),
     ),
     Service(
       name: 'Accommodation',
       description: 'Book rooms and view accommodation facilities',
       icon: Icons.hotel,
-      page: _getPageByName('AccommodationPage'),
+      page: AccommodationPage(),
     ),
     Service(
       name: 'Transportation',
       description: 'Book transportation and check schedules',
       icon: Icons.directions_bus,
-      page: _getPageByName('TransportationPage'),
+      page: TransportationPage(),
     ),
     Service(
       name: 'Hall Booking',
       description: 'Book halls for events and meetings',
       icon: Icons.meeting_room,
-      page: _getPageByName('HallBookingPage'),
+      page: HallBookingPage(),
     ),
     Service(
       name: 'Appointments',
       description: 'Schedule appointments with faculty and staff',
       icon: Icons.calendar_today,
-      page: _getPageByName('AppointmentPage'),
+      page: AppointmentPage(),
     ),
     Service(
       name: 'Ticket Booking',
       description: 'Book tickets for campus events',
       icon: Icons.confirmation_number,
-      page: _getPageByName('TicketBookingPage'),
+      page: TicketBookingPage(),
     ),
     Service(
       name: 'Payments',
       description: 'Make payments for fees and services',
       icon: Icons.payment,
-      page: _getPageByName('PaymentsPage'),
+      page: PaymentsPage(),
     ),
   ];
 
@@ -140,12 +147,6 @@ class ServicesPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  static Widget _getPageByName(String name) {
-    // This is a placeholder. In a real app, you'd use a more structured approach
-    // to get the actual page widgets.
-    return Center(child: Text('$name Coming Soon'));
   }
 }
 
