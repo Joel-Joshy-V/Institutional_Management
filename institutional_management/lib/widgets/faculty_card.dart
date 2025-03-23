@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import '../models/hall.dart';
+import '../models/appointment.dart';
 
-class HallCard extends StatelessWidget {
-  final Hall hall;
+class FacultyCard extends StatelessWidget {
+  final Faculty faculty;
   final VoidCallback onSelected;
 
-  const HallCard({Key? key, required this.hall, required this.onSelected})
+  const FacultyCard({Key? key, required this.faculty, required this.onSelected})
     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Count available slots
     final availableSlotCount =
-        hall.availableSlots.where((slot) => slot.isAvailable).length;
+        faculty.availableSlots.where((slot) => slot.isAvailable).length;
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -25,28 +25,23 @@ class HallCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              // Left side with icon
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.meeting_room,
-                  color: Colors.blue.shade700,
-                  size: 32,
-                ),
+              // Faculty Image
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(faculty.imageUrl),
+                onBackgroundImageError: (_, __) {
+                  // Fallback if image fails to load
+                  return;
+                },
               ),
               SizedBox(width: 16),
-              // Middle with hall info
+              // Middle with faculty info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      hall.name,
+                      faculty.name,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -54,7 +49,7 @@ class HallCard extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Capacity: ${hall.capacity}',
+                      '${faculty.department} - ${faculty.position}',
                       style: TextStyle(color: Colors.grey[700], fontSize: 14),
                     ),
                     SizedBox(height: 4),

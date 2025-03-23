@@ -6,6 +6,7 @@ import 'providers/hall_provider.dart';
 import 'providers/accommodation_provider.dart';
 import 'providers/news_provider.dart';
 import 'providers/event_provider.dart';
+import 'providers/appointment_provider.dart';
 import 'services/api_service.dart';
 import 'providers/canteen_provider.dart';
 import 'pages/main_navigation_page.dart';
@@ -28,6 +29,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => HallProvider(apiService)),
         ChangeNotifierProvider(create: (_) => NewsProvider(apiService)),
         ChangeNotifierProvider(create: (_) => EventProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => AppointmentProvider(apiService)),
       ],
       child: MyApp(),
     ),
