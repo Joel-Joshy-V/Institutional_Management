@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:institutional_management/models/hall.dart';
+import 'package:provider/provider.dart';
+import '../providers/hall_provider.dart';
+import '../widgets/hall_card.dart';
+import '../models/hall_booking_request.dart';
 
 class HallBookingPage extends StatefulWidget {
   const HallBookingPage({Key? key}) : super(key: key);
@@ -8,229 +13,162 @@ class HallBookingPage extends StatefulWidget {
 }
 
 class _HallBookingPageState extends State<HallBookingPage> {
-  // Sample list of available halls
-  final List<Map<String, dynamic>> halls = [
-    {
-      'name': 'Main Hall',
-      'capacity': '500 people',
-      'timeSlots': [
-        {'date': '2023-10-25', 'slots': ['10:00 AM - 12:00 PM', '2:00 PM - 4:00 PM']},
-        {'date': '2023-10-26', 'slots': ['9:00 AM - 11:00 AM', '1:00 PM - 3:00 PM']},
-      ],
-    },
-    {
-      'name': 'Conference Room',
-      'capacity': '100 people',
-      'timeSlots': [
-        {'date': '2023-10-25', 'slots': ['11:00 AM - 1:00 PM']},
-        {'date': '2023-10-26', 'slots': ['10:00 AM - 12:00 PM', '3:00 PM - 5:00 PM']},
-      ],
-    },
-    {
-      'name': 'Auditorium',
-      'capacity': '300 people',
-      'timeSlots': [
-        {'date': '2023-10-25', 'slots': ['9:00 AM - 11:00 AM', '4:00 PM - 6:00 PM']},
-        {'date': '2023-10-26', 'slots': ['2:00 PM - 4:00 PM']},
-      ],
-    },
-  ];
-
-  // Selected hall, date, and time slot
-  Map<String, dynamic>? selectedHall;
-  String? selectedDate;
-  String? selectedTimeSlot;
-
-  // Form controllers
+  final _formKey = GlobalKey<FormState>();
   final _dateController = TextEditingController();
+  final _purposeController = TextEditingController();
+  String? _selectedTimeSlot;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<HallProvider>().fetchHalls();
+  }
 
   @override
   void dispose() {
     _dateController.dispose();
+    _purposeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _bookHall(BuildContext context, Hall hall) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final request = HallBookingRequest(
+      hallId: hall.id,
+      date: _dateController.text,
+      timeSlot: _selectedTimeSlot!,
+      purpose: _purposeController.text,
+    );
+
+    final success = await context.read<HallProvider>().bookHall(request);
+
+    if (success) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Hall booked successfully!')));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to book hall. Please try again.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Hall Booking'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // List of Available Halls
-            Text(
-              'Available Halls:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: halls.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 2,
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      title: Text(halls[index]['name']),
-                      subtitle: Text('Capacity: ${halls[index]['capacity']}'),
-                      onTap: () {
-                        setState(() {
-                          selectedHall = halls[index];
-                          selectedDate = null;
-                          selectedTimeSlot = null;
-                        });
-                      },
-                      tileColor: selectedHall == halls[index]
-                          ? Colors.blue.shade50
-                          : null,
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            // Hall Booking Form
-            if (selectedHall != null) ...[
-              Text(
-                'Book ${selectedHall!['name']}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: _dateController,
-                decoration: InputDecoration(
-                  labelText: 'Date',
-                  hintText: 'Select a date',
-                  suffixIcon: Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(DateTime.now().year + 1),
-                  );
-                  if (pickedDate != null) {
-                    setState(() {
-                      _dateController.text =
-                          "${pickedDate.toLocal()}".split(' ')[0];
-                      selectedDate = _dateController.text;
-                      selectedTimeSlot = null;
-                    });
-                  }
-                },
-              ),
-              SizedBox(height: 20),
-              if (selectedDate != null) ...[
-                Text(
-                  'Available Time Slots:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Column(
-                  children: selectedHall!['timeSlots']
-                      .where((slot) => slot['date'] == selectedDate)
-                      .map((slot) {
-                    return Column(
-                      children: slot['slots'].map<Widget>((timeSlot) {
-                        return Card(
-                          elevation: 2,
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          child: ListTile(
-                            title: Text(timeSlot),
-                            onTap: () {
-                              setState(() {
-                                selectedTimeSlot = timeSlot;
-                              });
-                            },
-                            tileColor: selectedTimeSlot == timeSlot
-                                ? Colors.blue.shade50
-                                : null,
-                          ),
-                        );
-                      }).toList(),
+    return Consumer<HallProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        return Scaffold(
+          appBar: AppBar(title: Text('Hall Booking')),
+          body: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: provider.halls.length,
+                  itemBuilder: (context, index) {
+                    final hall = provider.halls[index];
+                    return HallCard(
+                      hall: hall,
+                      onSelected: () => _showBookingDialog(context, hall),
                     );
-                  }).toList(),
-                ),
-              ],
-              SizedBox(height: 20),
-              if (selectedTimeSlot != null) ...[
-                ElevatedButton(
-                  onPressed: () {
-                    // Show confirmation dialog
-                    _showConfirmationDialog(context);
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    backgroundColor: Colors.blue,
-                  ),
+                ),
+              ),
+              if (provider.error != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Book Hall',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    provider.error!,
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
-              ],
             ],
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  // Show confirmation dialog
-  void _showConfirmationDialog(BuildContext context) {
+  void _showBookingDialog(BuildContext context, Hall hall) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Confirm Booking'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Hall: ${selectedHall!['name']}'),
-              Text('Date: $selectedDate'),
-              Text('Time Slot: $selectedTimeSlot'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Book ${hall.name}'),
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _dateController,
+                    decoration: InputDecoration(labelText: 'Date'),
+                    readOnly: true,
+                    onTap: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(Duration(days: 30)),
+                      );
+                      if (date != null) {
+                        _dateController.text =
+                            date.toIso8601String().split('T')[0];
+                      }
+                    },
+                    validator:
+                        (value) =>
+                            value?.isEmpty ?? true
+                                ? 'Please select a date'
+                                : null,
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: _selectedTimeSlot,
+                    decoration: InputDecoration(labelText: 'Time Slot'),
+                    items:
+                        hall.availableSlots
+                            .where((slot) => slot.isAvailable)
+                            .map(
+                              (slot) => DropdownMenuItem(
+                                value: slot.time,
+                                child: Text(slot.time),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        (value) => setState(() => _selectedTimeSlot = value),
+                    validator:
+                        (value) =>
+                            value == null ? 'Please select a time slot' : null,
+                  ),
+                  TextFormField(
+                    controller: _purposeController,
+                    decoration: InputDecoration(labelText: 'Purpose'),
+                    validator:
+                        (value) =>
+                            value?.isEmpty ?? true
+                                ? 'Please enter purpose'
+                                : null,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => _bookHall(context, hall),
+                child: Text('Book'),
+              ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Save the booking (you can add backend logic here)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Hall booked successfully!'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text('Confirm'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

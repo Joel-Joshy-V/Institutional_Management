@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'pages/login_page.dart';
+import 'providers/auth_provider.dart';
+import 'providers/hall_provider.dart';
+import 'providers/accommodation_provider.dart';
+import 'services/api_service.dart';
+import 'providers/canteen_provider.dart';
+import 'pages/main_navigation_page.dart';
+import 'config/api_config.dart';
+
+void main() {
+  final apiService = ApiService(baseUrl: ApiConfig.baseUrl);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => CanteenProvider(apiService)),
+        ChangeNotifierProvider(
+          create: (_) => AccommodationProvider(apiService),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => HallProvider(apiService)),
+        ChangeNotifierProvider(
+          create: (_) => AccommodationProvider(apiService),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Institutional Management App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+        home: MainNavigationPage(),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'pages/login_page.dart';
+import 'providers/auth_provider.dart';
+import 'providers/hall_provider.dart';
+import 'providers/accommodation_provider.dart';
+import 'services/api_service.dart';
+import 'providers/canteen_provider.dart';
+import 'pages/main_navigation_page.dart';
+import 'config/api_config.dart';
+
+void main() {
+  final apiService = ApiService(baseUrl: ApiConfig.baseUrl);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => CanteenProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => HallProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => AccommodationProvider(apiService)),
+      ],
+      child: MyApp(apiService: apiService),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  final ApiService apiService;
+
+  MyApp({required this.apiService});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Institutional Management App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
+      home: MainNavigationPage(),
+    );
+  }
+}
